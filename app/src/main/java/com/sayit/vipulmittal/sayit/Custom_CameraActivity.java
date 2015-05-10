@@ -5,12 +5,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,11 +40,40 @@ public class Custom_CameraActivity extends Activity {
     private Camera getCameraInstance() {
         Camera camera = null;
         try {
-            camera = Camera.open();
+            if (!getPackageManager()
+                    .hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+                Toast.makeText(this, "No camera on this device", Toast.LENGTH_LONG)
+                        .show();
+            } else {
+                camera = Camera.open();
+                int cameraId = findFrontFacingCamera();
+                if (cameraId < 0) {
+                    Toast.makeText(this, "No front facing camera found.",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    camera = Camera.open(cameraId);
+                }
+            }
         } catch (Exception e) {
             // cannot get camera or does not exist
         }
         return camera;
+    }
+
+    private int findFrontFacingCamera() {
+        int cameraId = -1;
+        // Search for the front facing camera
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                Log.d("CCA", "Camera found");
+                cameraId = i;
+                break;
+            }
+        }
+        return cameraId;
     }
 
     Camera.PictureCallback mPicture = new Camera.PictureCallback() {
