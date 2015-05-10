@@ -1,0 +1,10 @@
+# SayIt
+
+## Usage
+This is the first version of the application that launches camera and takes a photo on voice command.
+
+From the first page of the application, service to listen in background can be started or stopped. 
+Once the service is start, user at any point of time can say "Open camera" to see the preview. 
+While preview is available user can say "Take photo" to take a photo or "Leave" to exit the application.
+
+
