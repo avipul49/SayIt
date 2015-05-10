@@ -11,7 +11,7 @@ While preview is available user can say "Take photo" to take a photo or "Leave" 
 
 ### GEO actions
 
-Users can say "where am i" to see there current location.
+Users can say "where am i" to see their current location.
 
 
 
