@@ -30,6 +30,8 @@ import java.util.Locale;
 public class MyService extends Service {
     private static final String LAUNCHING_CAMERA = "Launching camera";
     public static final String SMILE_TAKING_PHOTO = "Smile! taking photo";
+    public static final String LOCATION_FOUND = "location_found";
+    public static final String GETTING_LOCATION = "Getting location";
     protected AudioManager mAudioManager;
     protected SpeechRecognizer mSpeechRecognizer;
     protected Intent mSpeechRecognizerIntent;
@@ -55,6 +57,7 @@ public class MyService extends Service {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(START);
         intentFilter.addAction(STOP);
+        intentFilter.addAction(LOCATION_FOUND);
         registerReceiver(receiver, intentFilter);
     }
 
@@ -93,6 +96,10 @@ public class MyService extends Service {
                     Intent intent = new Intent();
                     intent.setAction(Custom_CameraActivity.TAKE_PHOTO);
                     sendBroadcast(intent);
+                } else if (s.equals(GETTING_LOCATION)) {
+                    Intent intent = new Intent(MyService.this, MapsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
                 start();
             }
@@ -118,6 +125,13 @@ public class MyService extends Service {
             } else if (action.equals(STOP)) {
                 running = false;
                 stop();
+            } else if (action.equals(LOCATION_FOUND)) {
+                //running = false;
+                stop();
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LOCATION_FOUND);
+                String local = intent.getStringExtra("location");
+                ttobj.speak("You are in " + local, TextToSpeech.QUEUE_FLUSH, map);
             }
         }
     };
@@ -297,9 +311,14 @@ public class MyService extends Service {
 
             } else if (data.contains("leave") || data.contains("done")) {
                 Intent intent = new Intent();
-                intent.setAction(Custom_CameraActivity.STOP);
+                intent.setAction(MyService.STOP);
                 sendBroadcast(intent);
                 start();
+            } else if (data.get(0).toLowerCase().contains("where am i")) {
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, GETTING_LOCATION);
+                ttobj.speak(GETTING_LOCATION, TextToSpeech.QUEUE_FLUSH, map);
+
             } else {
                 start();
             }

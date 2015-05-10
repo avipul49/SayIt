@@ -25,7 +25,6 @@ public class Custom_CameraActivity extends Activity {
     private Camera mCamera;
     private CameraPreview mCameraPreview;
     public static final String TAKE_PHOTO = "TakePhoto";
-    public static final String STOP = "Stop";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,7 +119,7 @@ public class Custom_CameraActivity extends Activity {
         super.onResume();
         IntentFilter filter = new IntentFilter();
         filter.addAction(TAKE_PHOTO);
-        filter.addAction(STOP);
+        filter.addAction(MyService.STOP);
         registerReceiver(receiver, filter);
     }
 
@@ -145,7 +144,7 @@ public class Custom_CameraActivity extends Activity {
                     }
                 }, 100);
 
-            } else if (action.equals(STOP)) {
+            } else if (action.equals(MyService.STOP)) {
                 Custom_CameraActivity.this.finish();
             }
         }
