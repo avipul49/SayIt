@@ -10,5 +10,6 @@
     <string name="tap_on_mic_stop">Tap on mic to stop listening</string>
     <string name="title_activity_make_photo">MakePhotoActivity</string>
     <string name="title_activity_custom__camera">Custom_CameraActivity</string>
+    <string name="title_activity_audio_record_test">AudioRecordTest</string>
 
 </resources>

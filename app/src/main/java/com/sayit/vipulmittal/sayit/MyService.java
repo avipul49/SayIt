@@ -299,28 +299,33 @@ public class MyService extends Service {
                 Log.d("---", "result " + data.get(i));
                 str += data.get(i);
             }
-            if (data.contains("open camera")) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LAUNCHING_CAMERA);
-                ttobj.speak(LAUNCHING_CAMERA, TextToSpeech.QUEUE_FLUSH, map);
-                //dispatchTakePictureIntent();
-            } else if (data.contains("take photo")) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, SMILE_TAKING_PHOTO);
-                ttobj.speak(SMILE_TAKING_PHOTO, TextToSpeech.QUEUE_FLUSH, map);
-
-            } else if (data.contains("leave") || data.contains("done")) {
-                Intent intent = new Intent();
-                intent.setAction(MyService.STOP);
-                sendBroadcast(intent);
-                start();
-            } else if (data.get(0).toLowerCase().contains("where am i")) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, GETTING_LOCATION);
-                ttobj.speak(GETTING_LOCATION, TextToSpeech.QUEUE_FLUSH, map);
-
-            } else {
-                start();
+            Action action = Action.getAction(data);
+            HashMap<String, String> map = null;
+            switch (action) {
+                case OPEN_CAMERA:
+                    map = new HashMap<String, String>();
+                    map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LAUNCHING_CAMERA);
+                    ttobj.speak(LAUNCHING_CAMERA, TextToSpeech.QUEUE_FLUSH, map);
+                    break;
+                case TAKE_PHOTO:
+                    map = new HashMap<String, String>();
+                    map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, SMILE_TAKING_PHOTO);
+                    ttobj.speak(SMILE_TAKING_PHOTO, TextToSpeech.QUEUE_FLUSH, map);
+                    break;
+                case LEAVE:
+                    Intent intent = new Intent();
+                    intent.setAction(MyService.STOP);
+                    sendBroadcast(intent);
+                    start();
+                    break;
+                case WHERE_AM_I:
+                    map = new HashMap<String, String>();
+                    map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, GETTING_LOCATION);
+                    ttobj.speak(GETTING_LOCATION, TextToSpeech.QUEUE_FLUSH, map);
+                    break;
+                case NOT_FOUND:
+                    start();
+                    break;
             }
             if (mIsStreamSolo) {
                 mAudioManager.setStreamSolo(AudioManager.STREAM_SYSTEM, false);
