@@ -1,4 +1,4 @@
-package com.sayit.vipulmittal.sayit;
+package com.sayit.vipulmittal.sayit.camera;
 
 import android.content.Context;
 import android.hardware.Camera;

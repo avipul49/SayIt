@@ -1,4 +1,4 @@
-package com.sayit.vipulmittal.sayit;
+package com.sayit.vipulmittal.sayit.camera;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -14,6 +14,9 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.sayit.vipulmittal.sayit.listenerModule.ListenerService;
+import com.sayit.vipulmittal.sayit.R;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,6 +28,7 @@ public class Custom_CameraActivity extends Activity {
     private Camera mCamera;
     private CameraPreview mCameraPreview;
     public static final String TAKE_PHOTO = "TakePhoto";
+    public boolean doneTakingPhoto = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,7 +123,7 @@ public class Custom_CameraActivity extends Activity {
         super.onResume();
         IntentFilter filter = new IntentFilter();
         filter.addAction(TAKE_PHOTO);
-        filter.addAction(MyService.STOP);
+        filter.addAction(ListenerService.STOP);
         registerReceiver(receiver, filter);
     }
 
@@ -135,7 +139,8 @@ public class Custom_CameraActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             Log.i("S---", "Message received");
             String action = intent.getAction();
-            if (action.equals(TAKE_PHOTO)) {
+            if (action.equals(TAKE_PHOTO) && !doneTakingPhoto) {
+                doneTakingPhoto = true;
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -144,7 +149,7 @@ public class Custom_CameraActivity extends Activity {
                     }
                 }, 100);
 
-            } else if (action.equals(MyService.STOP)) {
+            } else if (action.equals(ListenerService.STOP)) {
                 Custom_CameraActivity.this.finish();
             }
         }

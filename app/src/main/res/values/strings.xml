@@ -12,4 +12,9 @@
     <string name="title_activity_custom__camera">Custom_CameraActivity</string>
     <string name="title_activity_audio_record_test">AudioRecordTest</string>
 
+
+    <string name="loading">Please wait while application is getting loaded.</string>
+    <string name="loaded">Application loaded successfully, service can be started now</string>
+    <string name="running">Application running</string>
+
 </resources>

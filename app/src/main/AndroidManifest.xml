@@ -22,7 +22,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".core.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,8 +30,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".utils.PocketSphinxActivity"
+            android:label="@string/app_name">
 
-        <service android:name=".MyService" />
+        </activity>
+
+        <service android:name=".listenerModule.ListenerService" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -40,12 +45,12 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".MapsActivity"></activity>
+        <activity android:name=".location.MapsActivity"></activity>
         <activity
-            android:name=".Custom_CameraActivity"
+            android:name=".camera.Custom_CameraActivity"
             android:label="@string/title_activity_custom__camera" />
         <activity
-            android:name=".AudioRecordTest"
+            android:name=".utils.AudioRecordTest"
             android:label="@string/title_activity_audio_record_test">
 
         </activity>

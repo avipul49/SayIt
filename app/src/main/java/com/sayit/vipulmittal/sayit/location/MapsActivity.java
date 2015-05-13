@@ -1,4 +1,4 @@
-package com.sayit.vipulmittal.sayit;
+package com.sayit.vipulmittal.sayit.location;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,6 +19,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sayit.vipulmittal.sayit.listenerModule.ListenerService;
+import com.sayit.vipulmittal.sayit.R;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +48,7 @@ public class MapsActivity extends FragmentActivity implements android.location.L
         super.onResume();
         setUpMapIfNeeded();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(MyService.STOP);
+        filter.addAction(ListenerService.STOP);
         registerReceiver(receiver, filter);
     }
 
@@ -69,20 +71,10 @@ public class MapsActivity extends FragmentActivity implements android.location.L
         }
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
     private void setUpMap() {
-
         marker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 
-    /**
-     * ********** Called after each 3 sec *********
-     */
     @Override
     public void onLocationChanged(Location location) {
         String str = "Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude();
@@ -93,7 +85,7 @@ public class MapsActivity extends FragmentActivity implements android.location.L
                 addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                 if (addresses.size() > 0) {
                     Intent intent = new Intent();
-                    intent.setAction(MyService.LOCATION_FOUND);
+                    intent.setAction(ListenerService.LOCATION_FOUND);
                     intent.putExtra("location", addresses.get(0).getLocality());
                     sendBroadcast(intent);
                 }
@@ -103,7 +95,6 @@ public class MapsActivity extends FragmentActivity implements android.location.L
             e.printStackTrace();
         }
 
-        //Toast.makeText(getBaseContext(), str, Toast.LENGTH_LONG).show();
         if (marker != null)
             marker.remove();
         marker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Marker"));
@@ -112,24 +103,16 @@ public class MapsActivity extends FragmentActivity implements android.location.L
 
     @Override
     public void onProviderDisabled(String provider) {
-
-        /******** Called when User off Gps *********/
-
         Toast.makeText(getBaseContext(), "Gps turned off ", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-
-        /******** Called when User on Gps  *********/
-
         Toast.makeText(getBaseContext(), "Gps turned on ", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        // TODO Auto-generated method stub
-
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -138,7 +121,7 @@ public class MapsActivity extends FragmentActivity implements android.location.L
         public void onReceive(Context context, Intent intent) {
             Log.i("S---", "Message received");
             String action = intent.getAction();
-            if (action.equals(MyService.STOP)) {
+            if (action.equals(ListenerService.STOP)) {
                 MapsActivity.this.finish();
             }
         }

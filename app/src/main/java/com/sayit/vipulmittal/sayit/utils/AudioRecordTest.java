@@ -1,4 +1,4 @@
-package com.sayit.vipulmittal.sayit;
+package com.sayit.vipulmittal.sayit.utils;
 
 
 import android.app.Activity;
