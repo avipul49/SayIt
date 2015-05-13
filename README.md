@@ -1,17 +1,21 @@
 # SayIt
+This application is build apone following library 
+http://cmusphinx.sourceforge.net/wiki/tutorialandroid
+
+The library provides functionalities to get the audio input from the microphone and translate it into text. The translation into text is done following a grammer which we can provide. Additionlly, grammer can be changed at runtime. 
+
+This is more like changin context. In this application when user says camera, grammer for camera is loaded and only if user says something that matches with camera grammer some action will be taken. Once user exits the camera. It goes back to menu grammer, which looks for "camera" or "location" command.
+
+
 
 ## Usage
+After launching application, user needs to wait while decoder is loaded. Once loaded listening can be started by pressing a button the screen (Same button can be used to stop the application). Once the application is running, it waits for user to say **please start**. User can now issue **camera**, **location** or **stop listening** commands.
 
 ### Camera actions
-This is the first version of the application that launches camera and takes a photo on voice command.
+Once user says **camera** camera is launched and grammer for camera is loaded. The application now looks for **click photo** or **done taking photo** and acts accordingly. 
 
-From the first page of the application, service to listen in background can be started or stopped. 
-Once the service is started, at any point of time user can say "Open camera" to see the preview. 
-While preview is available user can say "Take photo" to take a photo or "Leave" to exit the application.
-
-### GEO actions
-
-Users can say "where am i" to see their current location.
+### Location actions
+Once user says **location**  grammer for location is loaded. The application now looks for **where am i** or **exit** and acts accordingly. 
 
 
 
