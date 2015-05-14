@@ -66,12 +66,14 @@ public class MainActivity extends FragmentActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(ListenerService.LOADED)) {
-                fragment.statusChanged(MainFragment.Status.LOADED);
-            } else if (action.equals(ListenerService.RUNNING)) {
-                fragment.statusChanged(MainFragment.Status.RUNNING);
-            } else if (action.equals(ListenerService.STOPPED)) {
-                fragment.statusChanged(MainFragment.Status.LOADED);
+            if (fragment != null) {
+                if (action.equals(ListenerService.LOADED)) {
+                    fragment.statusChanged(MainFragment.Status.LOADED);
+                } else if (action.equals(ListenerService.RUNNING)) {
+                    fragment.statusChanged(MainFragment.Status.RUNNING);
+                } else if (action.equals(ListenerService.STOPPED)) {
+                    fragment.statusChanged(MainFragment.Status.LOADED);
+                }
             }
         }
     };

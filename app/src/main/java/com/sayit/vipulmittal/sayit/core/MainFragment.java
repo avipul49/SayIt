@@ -3,6 +3,7 @@ package com.sayit.vipulmittal.sayit.core;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +60,21 @@ public class MainFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        String text = getString(R.string.tap_on_mic_start);
+
+        listening = false;
+        if (ListenerService.running) {
+            text = getString(R.string.tap_on_mic_stop);
+            statusChanged(Status.RUNNING);
+            listening = true;
+        }
+        displayedMessage.setText(text);
+
     }
 
     public void statusChanged(Status status) {

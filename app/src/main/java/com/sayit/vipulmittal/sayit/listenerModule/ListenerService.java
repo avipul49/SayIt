@@ -1,20 +1,27 @@
 package com.sayit.vipulmittal.sayit.listenerModule;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.sayit.vipulmittal.sayit.R;
 import com.sayit.vipulmittal.sayit.camera.Custom_CameraActivity;
+import com.sayit.vipulmittal.sayit.core.MainActivity;
 import com.sayit.vipulmittal.sayit.location.MapsActivity;
 
 import java.io.File;
@@ -49,6 +56,7 @@ public class ListenerService extends Service implements
     public final static String START = "start";
     public final static String STOP = "stop";
     public final static String STOP_SERVICE = "stop_service";
+    private static final int NOTIFICATION_ID = 1;
 
     private boolean startRequested = false;
     private boolean canStart = false;
@@ -58,6 +66,10 @@ public class ListenerService extends Service implements
     protected AudioManager mAudioManager;
     private TextToSpeech textToSpeech;
     private String currentSearch = KWS_SEARCH;
+    private NotificationManager notificationManager;
+
+
+    public static boolean running = false;
 
     @Override
     public void onCreate() {
@@ -65,6 +77,9 @@ public class ListenerService extends Service implements
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         initSpeechToText();
         initTextToSpeech();
+
+        notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(START);
         intentFilter.addAction(STOP_SERVICE);
@@ -95,6 +110,7 @@ public class ListenerService extends Service implements
                     intent.setAction(LOADED);
                     canStart = true;
                     if (startRequested) {
+                        makeNotification(ListenerService.this, "SayIt application is running.", "Say please start to start listening");
                         switchSearch(currentSearch);
                         intent.setAction(RUNNING);
                     }
@@ -123,9 +139,7 @@ public class ListenerService extends Service implements
 
             @Override
             public void onDone(String s) {
-                if (s.equals(INITIAL_MESSAGE)) {
-                    //start();
-                }
+
                 if (s.equals(LAUNCHING_CAMERA)) {
                     cameraOpen = true;
                     dispatchTakePictureIntent();
@@ -163,6 +177,8 @@ public class ListenerService extends Service implements
                 intent1.setAction(STOPPED);
                 sendBroadcast(intent1);
                 stop();
+                running = false;
+                notificationManager.cancel(NOTIFICATION_ID);
             } else if (action.equals(LOCATION_FOUND)) {
                 //running = false;
                 stop();
@@ -216,9 +232,10 @@ public class ListenerService extends Service implements
             return;
 
         String text = hypothesis.getHypstr();
-        if (text.equals(KEYPHRASE))
+        if (text.equals(KEYPHRASE)) {
+            makeNotification(ListenerService.this, "SayIt application is listening.", "Say 'camera', 'location' or 'stop listening'");
             switchSearch(MENU_SEARCH);
-        else if (text.equals(LOCATION_SEARCH))
+        } else if (text.equals(LOCATION_SEARCH))
             switchSearch(LOCATION_SEARCH);
         else if (text.equals(CAMERA_SEARCH)) {
             switchSearch(CAMERA_SEARCH);
@@ -256,7 +273,7 @@ public class ListenerService extends Service implements
                     intent.setAction(ListenerService.STOP);
                     sendBroadcast(intent);
                     currentSearch = MENU_SEARCH;
-                    start();
+                    switchSearch(currentSearch);
                     cameraOpen = false;
                     break;
                 case WHERE_AM_I:
@@ -285,12 +302,15 @@ public class ListenerService extends Service implements
     }
 
     private void switchSearch(String searchName) {
+        running = true;
         currentSearch = searchName;
         recognizer.stop();
         if (!searchName.equals(KWS_SEARCH))
             recognizer.startListening(searchName, 1000);
-        else
+        else {
             recognizer.startListening(searchName);
+            makeNotification(ListenerService.this, "SayIt application is running.", "Say please start to start listening");
+        }
 
     }
 
@@ -322,5 +342,30 @@ public class ListenerService extends Service implements
     @Override
     public void onTimeout() {
         switchSearch(currentSearch);
+    }
+
+    private void makeNotification(Context context, String title, String subtitle) {
+        Intent intent = new Intent(context, MainActivity.class);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,
+                NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(context)
+                .setContentTitle(title)
+                .setContentText(subtitle)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
+        Notification n;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            n = builder.build();
+        } else {
+            n = builder.getNotification();
+        }
+
+        n.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+
+        notificationManager.notify(NOTIFICATION_ID, n);
     }
 }
