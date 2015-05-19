@@ -152,14 +152,14 @@ public class AudioRecordTest extends Activity {
     @Override
     public void onPause() {
         super.onPause();
-//        if (mRecorder != null) {
-//            mRecorder.release();
-//            mRecorder = null;
-//        }
-//
-//        if (mPlayer != null) {
-//            mPlayer.release();
-//            mPlayer = null;
-//        }
+        if (mRecorder != null) {
+            mRecorder.release();
+            mRecorder = null;
+        }
+
+        if (mPlayer != null) {
+            mPlayer.release();
+            mPlayer = null;
+        }
     }
 }

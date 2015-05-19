@@ -1,5 +1,5 @@
 #JSGF V1.0;
 
-grammar camera;
+grammar location;
 
-public <item> = where am i | exit;
+public <item> = go to <NULL> sometime;

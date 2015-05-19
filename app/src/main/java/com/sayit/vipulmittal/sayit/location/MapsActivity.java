@@ -19,8 +19,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.sayit.vipulmittal.sayit.listenerModule.ListenerService;
 import com.sayit.vipulmittal.sayit.R;
+import com.sayit.vipulmittal.sayit.listenerModule.ListenerService;
+import com.sayit.vipulmittal.sayit.listenerModule.MyService;
 
 import java.io.IOException;
 import java.util.List;
@@ -85,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements android.location.L
                 addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                 if (addresses.size() > 0) {
                     Intent intent = new Intent();
-                    intent.setAction(ListenerService.LOCATION_FOUND);
+                    intent.setAction(MyService.LOCATION_FOUND);
                     intent.putExtra("location", addresses.get(0).getLocality());
                     sendBroadcast(intent);
                 }

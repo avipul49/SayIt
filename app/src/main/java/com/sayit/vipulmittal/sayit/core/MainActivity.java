@@ -10,6 +10,7 @@ import android.view.Menu;
 
 import com.sayit.vipulmittal.sayit.R;
 import com.sayit.vipulmittal.sayit.listenerModule.ListenerService;
+import com.sayit.vipulmittal.sayit.listenerModule.MyService;
 
 
 public class MainActivity extends FragmentActivity {
@@ -28,6 +29,7 @@ public class MainActivity extends FragmentActivity {
                     .commit();
         }
         startService(new Intent(this, ListenerService.class));
+        startService(new Intent(this, MyService.class));
 
     }
 

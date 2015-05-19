@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.sayit.vipulmittal.sayit.R;
 import com.sayit.vipulmittal.sayit.camera.Custom_CameraActivity;
@@ -32,7 +31,6 @@ import java.util.Locale;
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.Hypothesis;
 
-import static android.widget.Toast.makeText;
 import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
 
 public class ListenerService extends Service implements
@@ -41,12 +39,12 @@ public class ListenerService extends Service implements
     private static final String CAMERA_SEARCH = "camera";
     private static final String MENU_SEARCH = "menu";
     private static final String LOCATION_SEARCH = "location";
-    private static final String KEYPHRASE = "please start";
+    private static final String KEYPHRASE = "Ding ding start";
 
     public static final String STARTING_SAY_IT_APPLICATION = "Starting say it application.";
     private static final String LAUNCHING_CAMERA = "Launching camera";
     public static final String SMILE_TAKING_PHOTO = "Smile! taking photo";
-    public static final String LOCATION_FOUND = "location_found";
+    //    public static final String LOCATION_FOUND = "location_found";
     public static final String GETTING_LOCATION = "Getting location";
 
     public static final String INITIAL_MESSAGE = "initial_message";
@@ -83,7 +81,6 @@ public class ListenerService extends Service implements
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(START);
         intentFilter.addAction(STOP_SERVICE);
-        intentFilter.addAction(LOCATION_FOUND);
         registerReceiver(receiver, intentFilter);
     }
 
@@ -110,7 +107,7 @@ public class ListenerService extends Service implements
                     intent.setAction(LOADED);
                     canStart = true;
                     if (startRequested) {
-                        makeNotification(ListenerService.this, "SayIt application is running.", "Say please start to start listening");
+                        makeNotification(ListenerService.this, "SayIt application is running.", "Say 'Ding ding start' to start listening");
                         switchSearch(currentSearch);
                         intent.setAction(RUNNING);
                     }
@@ -179,14 +176,8 @@ public class ListenerService extends Service implements
                 stop();
                 running = false;
                 notificationManager.cancel(NOTIFICATION_ID);
-            } else if (action.equals(LOCATION_FOUND)) {
-                //running = false;
-                stop();
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LOCATION_FOUND);
-                String local = intent.getStringExtra("location");
-                textToSpeech.speak("You are in " + local, TextToSpeech.QUEUE_FLUSH, map);
             }
+
         }
     };
 
@@ -233,62 +224,17 @@ public class ListenerService extends Service implements
 
         String text = hypothesis.getHypstr();
         if (text.equals(KEYPHRASE)) {
-            makeNotification(ListenerService.this, "SayIt application is listening.", "Say 'camera', 'location' or 'stop listening'");
-            switchSearch(MENU_SEARCH);
-        } else if (text.equals(LOCATION_SEARCH))
-            switchSearch(LOCATION_SEARCH);
-        else if (text.equals(CAMERA_SEARCH)) {
-            switchSearch(CAMERA_SEARCH);
-
+            makeNotification(ListenerService.this, "SayIt application is listening.", "Camera and location actions");
+            Intent intent = new Intent();
+            intent.setAction(MyService.START);
+            sendBroadcast(intent);
+            stop();
         }
-        Log.i("Text found", "--------" + text);
     }
 
     @Override
     public void onResult(Hypothesis hypothesis) {
-        if (hypothesis != null) {
-            String text = hypothesis.getHypstr();
-            makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            Log.i("Text found", "----On result----" + text);
-            Action action = Action.getAction(text);
-            HashMap<String, String> map = null;
-            switch (action) {
-                case OPEN_CAMERA:
-                    if (!cameraOpen) {
-                        map = new HashMap<String, String>();
-                        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LAUNCHING_CAMERA);
-                        textToSpeech.speak(LAUNCHING_CAMERA, TextToSpeech.QUEUE_FLUSH, map);
-                    }
-                    //dispatchTakePictureIntent();
-                    break;
-                case TAKE_PHOTO:
-                    if (cameraOpen) {
-                        map = new HashMap<String, String>();
-                        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, SMILE_TAKING_PHOTO);
-                        textToSpeech.speak(SMILE_TAKING_PHOTO, TextToSpeech.QUEUE_FLUSH, map);
-                    }
-                    break;
-                case LEAVE:
-                    Intent intent = new Intent();
-                    intent.setAction(ListenerService.STOP);
-                    sendBroadcast(intent);
-                    currentSearch = MENU_SEARCH;
-                    switchSearch(currentSearch);
-                    cameraOpen = false;
-                    break;
-                case WHERE_AM_I:
-                    map = new HashMap<String, String>();
-                    map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, GETTING_LOCATION);
-                    textToSpeech.speak(GETTING_LOCATION, TextToSpeech.QUEUE_FLUSH, map);
-                    break;
-                case STOP_LISTENING:
-                    currentSearch = KWS_SEARCH;
-                    start();
-                    break;
-                case NOT_FOUND:
-                    break;
-            }
-        }
+
     }
 
     @Override
@@ -309,7 +255,7 @@ public class ListenerService extends Service implements
             recognizer.startListening(searchName, 1000);
         else {
             recognizer.startListening(searchName);
-            makeNotification(ListenerService.this, "SayIt application is running.", "Say please start to start listening");
+            makeNotification(ListenerService.this, "SayIt application is running.", "Say 'Ding ding start' to start listening");
         }
 
     }
